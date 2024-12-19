@@ -1,6 +1,6 @@
 # lego-action
 
-use lego to issue ssl certificate
+use lego to issue ssl certificate via dns api mode
 
 ## HOW TO USE
 ```
@@ -19,4 +19,5 @@ jobs:
           lego-dns-provider: alidns
           domains: "*.example,com*"
           dns-resolvers: 1.1.1.1:53
+          lego-server: https://acme-staging-v02.api.letsencrypt.org/directory
 ```
