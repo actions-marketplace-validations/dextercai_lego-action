@@ -29,6 +29,10 @@ inputs:
     description: For dns challenage pre-check
     required: true
     default: "1.1.1.1:53"
+  lego-server:
+    description: The server used for request certificate.
+    required: true
+    default: "https://acme-v02.api.letsencrypt.org/directory"
 runs:
   using: "composite"
   steps:
@@ -81,5 +85,5 @@ runs:
     - name: Request SSL certificate with lego cli tools
       shell: bash
       run: |
-        lego --email "${{ inputs.email }}" --dns ${{ inputs.lego-dns-provider }} --domains "${{ inputs.domains }}" --dns.resolvers ${{ inputs.dns-resolvers }} --pem --pfx --accept-tos run  
+        lego --server "${{ inputs.lego-server }}" --email "${{ inputs.email }}" --dns ${{ inputs.lego-dns-provider }} --domains "${{ inputs.domains }}" --dns.resolvers ${{ inputs.dns-resolvers }} --pem --pfx --accept-tos run  
     
