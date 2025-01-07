@@ -66,6 +66,7 @@ runs:
 
     - name: Extract account files for lego
       run: |
+        mkdir -p ./.lego/
         if ! [[ -z "$LEGO_INPUT_ACCOUNT_TAR" ]]; then
           echo "$LEGO_INPUT_ACCOUNT_TAR" | base64 -d | tar -C ./.lego/ -xz
         fi
