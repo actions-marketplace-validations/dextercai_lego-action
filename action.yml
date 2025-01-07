@@ -91,4 +91,13 @@ runs:
     - name: Request SSL certificate with lego cli tools by docker
       shell: bash
       run: |
-        docker run --env-file <(env) --rm -v $(pwd)/.lego/:/.lego/ goacme/lego --server "${{ inputs.lego-server }}" --email "${{ inputs.email }}" --dns ${{ inputs.lego-dns-provider }} --domains "${{ inputs.domains }}" --dns.resolvers ${{ inputs.dns-resolvers }} --pem --pfx --accept-tos run  
+        docker run --rm \
+        -v $(pwd)/.lego/:/.lego/ \
+        -u$UID:$GID goacme/lego \
+        --env-file <(env) \
+        --server "${{ inputs.lego-server }}" \
+        --email "${{ inputs.email }}" \
+        --dns ${{ inputs.lego-dns-provider }} \
+        --domains "${{ inputs.domains }}" \
+        --dns.resolvers ${{ inputs.dns-resolvers }} \
+        --pem --pfx --accept-tos run  
