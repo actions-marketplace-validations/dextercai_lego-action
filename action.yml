@@ -93,8 +93,8 @@ runs:
       run: |
         docker run --rm \
         -v $(pwd)/.lego/:/.lego/ \
-        -u$UID:$GID goacme/lego \
         --env-file <(env) \
+        -u$UID:$GID goacme/lego \
         --server "${{ inputs.lego-server }}" \
         --email "${{ inputs.email }}" \
         --dns ${{ inputs.lego-dns-provider }} \
