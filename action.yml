@@ -36,36 +36,37 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Get latest go version
-      id: version
-      shell: bash
-      run: |
-        echo ::set-output name=go_version::$(curl -s https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json | grep -oE '"version": "[0-9]{1}.[0-9]{1,}(.[0-9]{1,})?"' | head -1 | cut -d':' -f2 | sed 's/ //g; s/"//g')
+    # - name: Get latest go version
+    #   id: version
+    #   shell: bash
+    #   run: |
+    #     echo ::set-output name=go_version::$(curl -s https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json | grep -oE '"version": "[0-9]{1}.[0-9]{1,}(.[0-9]{1,})?"' | head -1 | cut -d':' -f2 | sed 's/ //g; s/"//g')
       
-    - name: Setup Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: ${{ steps.version.outputs.go_version }}
+    # - name: Setup Go
+    #   uses: actions/setup-go@v2
+    #   with:
+    #     go-version: ${{ steps.version.outputs.go_version }}
     
-    - name: Cache Go modules
-      id: cache-go-modules
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/go-build
-          ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ inputs.version }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+    # - name: Cache Go modules
+    #   id: cache-go-modules
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #       ~/.cache/go-build
+    #       ~/go/pkg/mod
+    #     key: ${{ runner.os }}-go-${{ inputs.version }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-go-
 
-    - name: Install Lego Tools
-      shell: bash
-      run: |
-        mkdir -p ./.lego/ && \
-        go install github.com/go-acme/lego/v4/cmd/lego@${{ inputs.version }}
+    # - name: Install Lego Tools
+    #   shell: bash
+    #   run: |
+    #     mkdir -p ./.lego/ && \
+    #     go install github.com/go-acme/lego/v4/cmd/lego@${{ inputs.version }}
 
     - name: Extract account files for lego
       run: |
+        mkdir -p ./.lego/
         if ! [[ -z "$LEGO_INPUT_ACCOUNT_TAR" ]]; then
           echo "$LEGO_INPUT_ACCOUNT_TAR" | base64 -d | tar -C ./.lego/ -xz
         fi
@@ -82,8 +83,21 @@ runs:
           echo "${KV[0]}=${KV[1]}" >> $GITHUB_ENV
         done
 
-    - name: Request SSL certificate with lego cli tools
+    # - name: Request SSL certificate with lego cli tools
+    #   shell: bash
+    #   run: |
+    #     lego --server "${{ inputs.lego-server }}" --email "${{ inputs.email }}" --dns ${{ inputs.lego-dns-provider }} --domains "${{ inputs.domains }}" --dns.resolvers ${{ inputs.dns-resolvers }} --pem --pfx --accept-tos run  
+    
+    - name: Request SSL certificate with lego cli tools by docker
       shell: bash
       run: |
-        lego --server "${{ inputs.lego-server }}" --email "${{ inputs.email }}" --dns ${{ inputs.lego-dns-provider }} --domains "${{ inputs.domains }}" --dns.resolvers ${{ inputs.dns-resolvers }} --pem --pfx --accept-tos run  
-    
+        docker run --rm \
+        -v $(pwd)/.lego/:/.lego/ \
+        --env-file <(env) \
+        -u$UID:$GID goacme/lego \
+        --server "${{ inputs.lego-server }}" \
+        --email "${{ inputs.email }}" \
+        --dns ${{ inputs.lego-dns-provider }} \
+        --domains "${{ inputs.domains }}" \
+        --dns.resolvers ${{ inputs.dns-resolvers }} \
+        --pem --pfx --accept-tos run  
