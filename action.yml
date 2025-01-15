@@ -33,6 +33,10 @@ inputs:
     description: The server used for request certificate.
     required: true
     default: "https://acme-v02.api.letsencrypt.org/directory"
+  action:
+    description: lego action
+    required: true
+    default: "run"
 runs:
   using: "composite"
   steps:
@@ -100,4 +104,4 @@ runs:
         --dns ${{ inputs.lego-dns-provider }} \
         --domains "${{ inputs.domains }}" \
         --dns.resolvers ${{ inputs.dns-resolvers }} \
-        --pem --pfx --accept-tos run  
+        --pem --pfx --accept-tos ${{ inputs.action }}  
