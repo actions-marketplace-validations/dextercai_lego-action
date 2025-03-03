@@ -97,6 +97,7 @@ runs:
       run: |
         docker run --rm \
         -v $(pwd)/.lego/:/.lego/ \
+        -v ${{ github.workspace }}:${{ github.workspace }} \
         --env-file <(env) \
         -u$UID:$GID goacme/lego \
         --server "${{ inputs.lego-server }}" \
