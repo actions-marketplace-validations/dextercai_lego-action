@@ -2,8 +2,13 @@
 
 use lego to issue ssl certificate via dns api mode
 
-## HOW TO USE
-```
+## Note  
+
+- If some file exists in the github.workspace, the action will mount it to the docker with the same path.
+
+## HOW TO USE  
+
+```yaml
 jobs:
   issue-ssl-certificate:
     name: Issue SSL certificate
